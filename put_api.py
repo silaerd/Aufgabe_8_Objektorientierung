@@ -2,11 +2,11 @@ import requests
 import json
 
 # Define the URL of the API
-url = "http://localhost:5000/"
+url = "http://127.0.0.1:5000/"
 
 # Define the data you want to send
 data = {
-    "name": "Frankie"
+    "name": "TestName"
 }
 
 # Convert the data to JSON format
