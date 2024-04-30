@@ -35,5 +35,10 @@
   {
     "name": "TestName",
     "email": "TestName@mail.at"
+  },
+  {
+    "name": "Testname2",
+    "email": "TestName2@mail.at",
+    "age": 20
   }
 ]
