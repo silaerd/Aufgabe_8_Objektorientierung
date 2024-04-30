@@ -37,8 +37,6 @@
     "email": "TestName@mail.at"
   },
   {
-    "name": "Testname2",
-    "email": "TestName2@mail.at",
-    "age": 20
+    "name": "Testname2"
   }
 ]

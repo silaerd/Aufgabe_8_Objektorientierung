@@ -1,5 +1,4 @@
 import requests
-import json
 
 ## Update a person
 # Define the URL of the API
