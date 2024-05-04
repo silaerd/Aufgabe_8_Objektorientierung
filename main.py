@@ -1,77 +1,47 @@
-#!/usr/bin/env python
-# encoding: utf-8
 import json
-from flask import Flask, request, jsonify
+from my_functions import build_person, build_experiment
+from my_classes import Subject
 
-app = Flask(__name__)
+def main():
+    # Benutzer nach den benötigten Daten für die Person fragen
+    first_name = input("Enter first name: ")
+    last_name = input("Enter last name: ")
+    sex = input("Enter sex: ")
+    birth_date = input("Enter birth date (YYYY-MM-DD): ")
 
-# GET all persons
-@app.route('/person/', methods=['GET'])
-def get_persons():
-    with open('data.json', 'r') as f:
-        data = f.read()
-        return data
+    # Instanz für die Person erstellen
+    person = Subject(first_name, last_name, birth_date, sex)
 
+    # Maximale Herzfrequenz schätzen
+    max_hr_bpm = person.estimate_max_hr()
+    print("Max Heart Rate (bpm):", max_hr_bpm)
 
-# POST (create a new person)
-@app.route('/person/', methods=['POST'])
-def create_person():
-    record = json.loads(request.data)
-    with open('data.json', 'r') as f:
-        data = f.read()
-    if not data:
-        records = [record]
-    else:
-        records = json.loads(data)
-        records.append(record)
-    with open('data.json', 'w') as f:
-        f.write(json.dumps(records, indent=2))
-    return jsonify(record)
+    # Instanz für das Experiment erstellen
+    experiment_name = input("Enter experiment name: ")
+    date = input("Enter date: ")
+    supervisor = input("Enter supervisor name: ")
+    experiment = build_experiment(experiment_name, date, supervisor, person)  # person als Argument übergeben
 
-# GET a person by name
-@app.route('/person/<name>', methods=['GET'])
-def get_person(name):
+    # Dictionary für die Experiment-Informationen erstellen
+    experiment_info = {
+        "experiment_name": experiment_name,
+        "date": date,
+        "supervisor": supervisor,
+        "subject": {
+            "first_name": first_name,
+            "last_name": last_name,
+            "birth_date": birth_date,
+            "sex": sex,
+            "max_hr_bpm": max_hr_bpm
+        }
+    }
 
-    with open('data.json', 'r') as f:
-        data = f.read()
-        records = json.loads(data)
-        for record in records:
-            if record['name'] == name:
-                return jsonify(record)
-        return jsonify({'error': 'data not found'})
-    
-# PUT (update a person)
-@app.route('/person/<name>', methods=['PUT'])
+    # Experimenten-Dictionary ausgeben
+    print("Experiment Information:", experiment_info)
 
-def update_person(name):
-    record = json.loads(request.data)
-    with open('data.json', 'r') as f:
-        data = f.read()
-        records = json.loads(data)
-        for i in range(len(records)):
-            if records[i]['name'] == name:
-                records[i] = record
-                with open('data.json', 'w') as f:
-                    f.write(json.dumps(records, indent=2))
-                return jsonify(record)
-        return jsonify({'error': 'data not found'})
+    # Experimenten-Dictionary in einer Datei speichern
+    with open("experiment.json", "w") as outfile:
+        json.dump(experiment_info, outfile, indent=4)
 
-# DELETE a person
-@app.route('/person/<name>', methods=['DELETE'])
-
-def delete_person(name):
-
-    with open('data.json', 'r') as f:
-        data = f.read()
-        records = json.loads(data)
-        for i in range(len(records)):
-            if records[i]['name'] == name:
-                record = records.pop(i)
-                with open('data.json', 'w') as f:
-                    f.write(json.dumps(records, indent=2))
-                record["deleted"] = "True"
-                return jsonify(record)
-        return jsonify({'error': 'data not found'})
-
-
-app.run(debug=True)
+if __name__ == "__main__":
+    main()
